@@ -2,24 +2,32 @@ from orm import Table, get_table
 import os
 
 db_config = {
-    'host': os.environ.get("DB_HOST", "host.docker.internal"),
+    'host': os.environ.get("DB_HOST", "localhost"),
     'port': int(os.environ.get("DB_PORT", 3306)),
     'user': os.environ.get("DB_USER", "root"),
-    'password': os.environ.get("MYSQL_ROOT_PASSWORD", ""),
+    'password': os.environ.get("MYSQL_ROOT_PASSWORD", "123456"),
     'database': os.environ.get("MYSQL_DATABASE", "billdb"),
 }
 
+def db_connection():
+    Table.connect(config_dict=db_config)
+
 # Connect to the database and create tables if needed
-Table.connect(config_dict=db_config)
-Providers = get_table('Provider')
-Rates = get_table('Rates')
-Trucks = get_table('Trucks')
+def providers():
+    db_connection()
+    Providers = get_table('Provider')
+    print("Providers")
+    return Providers
 
-#test function needs to remove after first API will work with the BD
-def test_function():
-    new_provider = Providers.create(name='dany')
-    provider = Providers.find(id=10001)
-    print(provider.name)
+def rates():
+    db_connection()
+    Rates = get_table('rates')
+    print("Rates")
+    return Rates
 
-if __name__ == '__main__':
-    test_function()
+def trucks():
+    db_connection()
+    Trucks = get_table('trucks')
+    print("Trucks")
+    return Trucks
+
