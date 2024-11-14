@@ -16,18 +16,15 @@ def db_connection():
 def providers():
     db_connection()
     Providers = get_table('Provider')
-    print("Providers")
     return Providers
 
 def rates():
     db_connection()
     Rates = get_table('rates')
-    print("Rates")
     return Rates
 
 def trucks():
     db_connection()
     Trucks = get_table('trucks')
-    print("Trucks")
     return Trucks
 
