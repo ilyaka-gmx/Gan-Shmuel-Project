@@ -27,22 +27,35 @@ def health():
 @app.route('/github-webhook', methods=['POST'])
 def webhook():
     try:
-        # Get JSON data from GitHub webhook
         data = request.json
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        branch = data['ref'].split('/')[-1]  # Extract branch name from ref (e.g., 'refs/heads/master' -> 'master')
-
-        # Extract and organize relevant information
-        event_info = {
-            'timestamp': timestamp,
-            'branch': branch,
-            'repo': data['repository']['clone_url'],
-            'commit': data['after'],  # The new commit hash
-            'pusher': data['pusher']['name']
-        }
+        
+        # Handle PR merge event
+        if data['event'] == 'pull_request' and data['action'] == 'closed' and data['pull_request'].get('merged'):
+            event_info = {
+                'timestamp': timestamp,
+                'branch': 'master',  # Target branch is always master for merged PRs
+                'source_branch': data['pull_request']['head']['ref'],  # Branch that was merged
+                'repo': data['repository']['clone_url'],
+                'commit': data['pull_request']['merge_commit_sha'],
+                'pusher': data['pull_request']['user']['login']
+            }
+            
+        # Handle push event    
+        elif data['event'] == 'push':
+            event_info = {
+                'timestamp': timestamp,
+                'branch': data['ref'].partition('refs/heads/')[-1],
+                'source_branch': '',  # Empty for direct pushes
+                'repo': data['repository']['clone_url'],
+                'commit': data['after'],
+                'pusher': data['pusher']['name']
+            }
+        else:
+            return {'status': 'Not a PR Merge or push event'}, 400
 
         # Save event information to a file
-        event_file = f'/app/data/{timestamp}-{branch}_event.json'
+        event_file = f'/app/data/{timestamp}-{event_info["branch"]}_event.json'
         with open(event_file, 'w') as f:
             json.dump(event_info, f, indent=2)
 
@@ -50,7 +63,6 @@ def webhook():
         trigger_ci(event_info)
 
         return {'status': 'CI process triggered', 'info': event_info}, 200
-
     except Exception as e:
         logger.error(f"Error processing webhook: {str(e)}")
         return {'status': 'error', 'message': str(e)}, 500
