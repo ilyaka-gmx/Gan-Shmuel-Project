@@ -49,7 +49,6 @@ run_tests() {
     sleep 30
     
     # Run health checks for each service
-    # local services=("weight" "billing" "devops") # I.K. Don't think devops is needed, unlsess we plan tests for devops
     local services=("weight" "billing") # I.K. Don't think devops is needed, unlsess we plan tests for devops
     for service in "${services[@]}"; do
         log "Checking health of ${service} service..."
@@ -59,6 +58,18 @@ run_tests() {
             return 1  # Return error status
         fi
     done
+    # Run application tests
+    log "Running application tests..."
+    # TODO: Add application tests
+    # Example:
+    # ./run_tests.sh
+
+    # If tests fail, return error status
+    if [ $? -ne 0 ]; then
+        notify "FAILURE" "Tests failed"
+        cleanup
+        return 1
+    fi
     
     # If we got here, all tests passed
     notify "SUCCESS" "All tests passed"
