@@ -132,7 +132,11 @@ cd /home/ubuntu/gan-shmuel
 # Clone specific branch and keep only DevOps folder
 git clone -b feat/devops-monitoring --single-branch https://github.com/LaxForce/Gan-Shmuel-Project.git temp
 mv temp/DevOps .
-rm -rf temp
+sudo rm -rf temp
+cd DevOps
+
+# Delete unnecessary files
+sudo rm -r devops_documentation/ readme.txt webhook/
 ```
 
 #### Docker Configuration

@@ -9,7 +9,6 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     htop \
-    psutil \
     && rm -rf /var/lib/apt/lists/*
 
 # Install LazyDocker and check its version
