@@ -114,10 +114,50 @@ The system supports parallel development of CI and Monitoring components:
 
 ## Deployment Guide
 ### AWS EC2 Instance Setup
-- Manual GitHub Action to copy the DevOps branch to the AWS EC2 instance (using SSH) - optional, but recommended
-- ssh to the EC2 instance
-- Execute the `docker-compose up` for the CI portal , from webhook directory
-- check the logs of the webhook server and the CI portal
+#### Prerequisites Check and Installation
+```bash
+# Check installed packages
+which git docker docker-compose curl
+
+# Install required packages if missing
+sudo apt-get update
+sudo apt-get install -y git docker.io docker-compose curl
+```
+#### Repository Setup
+```bash
+# Create working directory
+mkdir -p /home/ubuntu/gan-shmuel
+cd /home/ubuntu/gan-shmuel
+
+# Clone specific branch and keep only DevOps folder
+git clone -b feat/devops-monitoring --single-branch https://github.com/LaxForce/Gan-Shmuel-Project.git temp
+mv temp/DevOps .
+rm -rf temp
+```
+
+#### Docker Configuration
+```bash
+# Start Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add current user to docker group
+sudo usermod -aG docker $USER
+newgrp docker
+```
+#### Deploy CI and Monitoring Containers
+```bash
+cd /home/ubuntu/gan-shmuel/DevOps
+docker-compose up -d --build
+
+# Verify Deployment
+docker ps
+curl http://localhost:8080/health
+
+# Verify monitoring endpoint
+curl http://localhost:8080/monitoring
+```
+- Note: later this process will be automated using GitHub Action (Manual workflow)
 
 ### GitHub Configuration
 
