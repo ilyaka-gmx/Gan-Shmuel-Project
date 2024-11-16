@@ -55,10 +55,10 @@ graph TD
 |-----------|------------|----------|
 | Core Development | Python 3.8+ | CI Portal, API Integration |
 | Scripting | Bash | Automation, Monitoring |
-| Database | MySQL | CI Portal Data, Application DBs |
-| Containerization | Docker, Docker-Compose | Environment Management |
-| Version Control | Git | Source Code Management |
-| API | REST | Inter-application Communication |
+| Database | MySQL | Application DBs |
+| Containerization | Docker, Docker-Compose | Deployment, Environment Management |
+| Version Control | GitHub | Source Code Management |
+| API | REST | Inter-application Communication, Application logic |
 
 ### Monorepo Description 
 - Billing, Weight, and DevOps applications in a single repository
