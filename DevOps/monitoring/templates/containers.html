@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Container Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('monitoring.static', filename='styles.css') }}">
+    <script>
+        function refreshContainers() {
+            fetch('/monitoring/containers/list')
+                .then(response => response.json())
+                .then(data => {
+                    const containerList = document.getElementById('containerList');
+                    containerList.innerHTML = '';
+                    data.containers.forEach(container => {
+                        containerList.innerHTML += `
+                            <div class="container-item">
+                                ${container.name} - ${container.status}
+                                (CPU: ${container.cpu}%, MEM: ${container.memory}MB)
+                            </div>`;
+                    });
+                });
+        }
+        setInterval(refreshContainers, 2000);
+    </script>
+</head>
+<body>
+    <div class="monitor-container">
+        <h2>Container Monitoring</h2>
+        <div id="containerList" class="container-list">Loading containers...</div>
+        
+        <button onclick="window.open('/monitoring/containers/terminal', '_blank')">Launch LazyDocker</button>
+        <a href="{{ url_for('monitoring.menu') }}"><button>Back to Menu</button></a>
+    </div>
+</body>
+</html>

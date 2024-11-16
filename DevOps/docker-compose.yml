@@ -9,6 +9,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock  # For managing external containers
       - ./logs:/app/logs  # For CI logs
       - ./data:/app/data  # For webhook data
+      - /proc:/host/proc:ro  # Added for host metrics
+      - /sys:/host/sys:ro   # Added for host metrics
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock # ENC Variable to tell docker where to find the docker daemon's socket. To give CI container ability to control docker on host machine essentially.
     restart: always

@@ -101,6 +101,16 @@ graph TD
 - Automated rollback procedure (to the last tagged version)
 - Manual rollback procedure (to a specific version)
 - Monitoring system development (Python/shell)
+### Monitoring Integration
+The CI system includes a comprehensive monitoring solution for both host machine and containers. For detailed information, see [Monitoring System Design](Monitoring%20Design.md).
+
+### Independent Development
+The system supports parallel development of CI and Monitoring components:
+- CI System: Handles webhook processing and deployment
+- Monitoring System: Provides system metrics and container status
+- Both systems share the same container but operate independently
+- Testing can be performed separately using dedicated endpoints
+
 
 ## Deployment Guide
 ### AWS EC2 Instance Setup
