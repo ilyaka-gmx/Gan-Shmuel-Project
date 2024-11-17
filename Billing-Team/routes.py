@@ -18,6 +18,7 @@ def provider():
 # Setup routes by registering the blueprint
 def setup_routes(app):
     app.register_blueprint(provider_bp)
+    app.register_blueprint(health_bp)
 
 
 # Define a Blueprint for health-related routes
@@ -29,6 +30,4 @@ def health():
     status, status_code = check_health()
     return jsonify(status), status_code
 
-# Register the Blueprint
-def setup_routes(app):
-    app.register_blueprint(health_bp)
+
