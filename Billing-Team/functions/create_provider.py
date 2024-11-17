@@ -1,8 +1,6 @@
 from sqlalchemy.orm import sessionmaker
 from sql.billing_sql import Providers, engine
 
-# Assuming `Providers` and `engine` are already defined elsewhere
-
 # Create a session maker bound to the engine
 Session = sessionmaker(bind=engine)
 session = Session()

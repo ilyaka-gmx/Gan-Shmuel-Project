@@ -14,10 +14,6 @@ def provider():
     provider, status_code = create_provider(data)
     return jsonify(provider), status_code
 
-@provider_bp.route('/', methods=['GET'])
-def home():
-    return jsonify({"message": "Welcome to the Provider API!"}), 200
-
 # Setup routes by registering the blueprint
 def setup_routes(app):
     app.register_blueprint(provider_bp)
