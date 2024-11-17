@@ -3,8 +3,16 @@ from functools import wraps
 import psutil
 import docker
 import subprocess
+import websockets
+import asyncio
+from flask_sock import Sock
+import socket
+import http.client
+import json
+from datetime import datetime
 
-monitor_bp = Blueprint('monitoring', __name__, template_folder='templates')
+monitor_bp = Blueprint('monitoring', __name__, template_folder='templates', static_folder='static', static_url_path='/monitoring/static')
+sock = Sock()
 
 def login_required(f):
     @wraps(f)
@@ -45,39 +53,120 @@ def machine_metrics():
         'disk': psutil.disk_usage('/').percent
     })
 
+
 @monitor_bp.route('/monitoring/containers/list')
 @login_required
 def container_list():
-    client = docker.from_env()
-    containers = []
-    
-    for container in client.containers.list(all=True):
-        stats = container.stats(stream=False)
-        containers.append({
-            'name': container.name,
-            'status': container.status,
-            'cpu': calculate_cpu_percent(stats),
-            'memory': calculate_memory_usage(stats)
-        })
-    
-    return jsonify({'containers': containers})
+    print("Starting container list retrieval")
+    try:
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect('/var/run/docker.sock')
+        
+        connection = http.client.HTTPConnection('localhost')
+        connection.sock = sock
+        
+        # Get containers with size information
+        connection.request('GET', '/containers/json?all=1&size=1')  # Added size=1 parameter
+        response = connection.getresponse()
+        containers_data = json.loads(response.read().decode())
+        
+        containers = []
+        for container in containers_data:
+            connection.request('GET', f'/containers/{container["Id"]}/stats?stream=false')
+            stats = json.loads(connection.getresponse().read().decode())
+            
+            # Use SizeRw + SizeRootFs for total size
+            total_size = (container.get('SizeRw', 0) + container.get('SizeRootFs', 0)) / (1024 * 1024)
+            
+            containers.append({
+                'name': container['Names'][0].lstrip('/'),
+                'status': container['State'],
+                'cpu': calculate_cpu_percent(stats),
+                'memory': calculate_memory_usage(stats),
+                'created': datetime.fromtimestamp(container['Created']).strftime('%Y-%m-%d %H:%M:%S'),
+                'size': total_size
+            })
+            
+        return jsonify({'containers': containers})
+        
+    except Exception as e:
+        print(f"Error in container_list: {str(e)}")
+        print(f"Exception type: {type(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        raise
+
 
 @monitor_bp.route('/monitoring/machine/terminal')
 @login_required
 def launch_htop():
-    subprocess.Popen(['x-terminal-emulator', '-e', 'htop'])
-    return '', 204
+    # Start ttyd with full path and explicit arguments
+    cmd = ['/usr/local/bin/ttyd', '-p', '7681', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', 'htop']
+    print(f"Launching ttyd with command: {' '.join(cmd)}")
+    
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    
+    # Check if process started successfully
+    if process.poll() is None:
+        print(f"ttyd started successfully with PID {process.pid}")
+    else:
+        stdout, stderr = process.communicate()
+        print(f"ttyd failed to start. stdout: {stdout}, stderr: {stderr}")
+    
+    return render_template('terminal.html')
 
 @monitor_bp.route('/monitoring/containers/terminal')
 @login_required
 def launch_lazydocker():
-    subprocess.Popen(['x-terminal-emulator', '-e', 'lazydocker'])
-    return '', 204
+    process = subprocess.Popen(['ttyd', '--port', '8080', 'lazydocker'])
+    return render_template('terminal.html', ws_path='/monitoring/ws/lazydocker')
+
+@monitor_bp.route('/monitoring/ws/<command>', websocket=True)
+def terminal_ws(command):
+    print(f"WebSocket endpoint registered for: /monitoring/ws/{command}")
+    async def proxy():
+        print(f"Starting proxy for {command}")
+        port = '7681'
+        async with websockets.connect(f'ws://localhost:{port}') as ttyd:
+            print(f"Connected to ttyd on port {port}")
+            while True:
+                message = await request.websocket.receive()
+                print(f"Received message: {message}")
+                await ttyd.send(message)
+                response = await ttyd.recv()
+                await request.websocket.send(response)
+    asyncio.run(proxy())
+
 
 def calculate_cpu_percent(stats):
+    # Check if we have the required CPU stats
+    if not all(key in stats.get('cpu_stats', {}) for key in ['cpu_usage', 'system_cpu_usage']):
+        return 0.0
+    
     cpu_delta = stats['cpu_stats']['cpu_usage']['total_usage'] - stats['precpu_stats']['cpu_usage']['total_usage']
-    system_delta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
-    return round((cpu_delta / system_delta) * 100, 2)
+    
+    # Check if system CPU usage is available
+    if 'system_cpu_usage' in stats['cpu_stats'] and 'system_cpu_usage' in stats['precpu_stats']:
+        system_delta = stats['cpu_stats']['system_cpu_usage'] - stats['precpu_stats']['system_cpu_usage']
+        online_cpus = stats['cpu_stats'].get('online_cpus', 1)
+        if system_delta > 0:
+            return round((cpu_delta / system_delta) * online_cpus * 100, 2)
+    
+    return 0.0
+
+
 
 def calculate_memory_usage(stats):
-    return round(stats['memory_stats']['usage'] / (1024 * 1024), 2)  # Convert to MB
+    memory_stats = stats.get('memory_stats', {})
+    if 'usage' not in memory_stats:
+        return 0.0
+        
+    usage = memory_stats['usage']
+    return round(usage / (1024 * 1024), 2)  # Convert to MB
+
+

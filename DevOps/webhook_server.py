@@ -4,6 +4,8 @@ import subprocess
 import logging
 import os
 from datetime import datetime
+from monitoring import init_monitoring
+from flask_sock import Sock
 
 # Setup logging configuration
 logging.basicConfig(
@@ -17,6 +19,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Generate a random secret key for session management
+sock=Sock(app)
+init_monitoring(app, sock) # Register monitoring blueprint
+logger.info("Monitoring initialized with WebSocket. Routes: {[rule.rule for rule in app.url_map.iter_rules()]}")
 
 # Basic health check endpoint
 @app.route('/health')
