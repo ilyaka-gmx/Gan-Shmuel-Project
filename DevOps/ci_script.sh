@@ -16,12 +16,22 @@ log() {
 notify() {
     local status=$1    # SUCCESS or FAILURE
     local message=$2   # Detailed message
+    
     log "CI ${status}: ${message}"
-    # TODO: Add notification logic (email/slack)
-    # Example:
-    # curl -X POST -H 'Content-type: application/json' \
-    #     --data "{\"text\":\"${status}: ${message}\"}" \
-    #     $WEBHOOK_URL
+    
+    # Call Python notifier directly with heredoc
+    python3 << EOF
+from notifier import CINotifier
+import logging
+
+logging.basicConfig(level=logging.INFO)
+notifier = CINotifier()
+notifier.send_notification(
+    "${status}",
+    "${message}",
+    "${LOG_FILE}"  # This is defined at the start of ci_script.sh
+)
+EOF
 }
 
 # Cleanup function to ensure test environment is removed
