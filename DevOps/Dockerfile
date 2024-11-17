@@ -17,6 +17,11 @@ RUN apt-get update && apt-get install -y \
 RUN curl -L https://github.com/tsl0922/ttyd/releases/download/1.7.3/ttyd.x86_64 -o /usr/local/bin/ttyd && \
     chmod +x /usr/local/bin/ttyd
 
+# Install LazyDocker
+RUN curl -L https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash \
+&& mv /root/.local/bin/lazydocker /usr/local/bin/lazydocker \
+&& chmod +x /usr/local/bin/lazydocker 
+# Set working directory
 WORKDIR /app
 
 # Create and activate virtual environment

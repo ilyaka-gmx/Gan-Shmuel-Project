@@ -43,7 +43,10 @@
     <script>
         window.onload = function() {
             const serverAddress = window.location.hostname;
-            const ttydUrl = `http://${serverAddress}:8085`;
+            const path = window.location.pathname;
+            const port = path.includes('machine') ? '8085' : '8087';
+            const ttydUrl = `http://${serverAddress}:${port}`;
+            // const ttydUrl = `http://${serverAddress}:8085`;
             // Create close button before redirect
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-button';

@@ -123,8 +123,26 @@ def launch_htop():
 @monitor_bp.route('/monitoring/containers/terminal')
 @login_required
 def launch_lazydocker():
-    process = subprocess.Popen(['ttyd', '--port', '8080', 'lazydocker'])
-    return render_template('terminal.html', ws_path='/monitoring/ws/lazydocker')
+    # Start ttyd with full path and explicit arguments
+    # cmd = ['/usr/local/bin/ttyd', '-p', '8087', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', '/usr/local/bin/lazydocker']
+    cmd = ['/usr/local/bin/ttyd', '-p', '8087', '-i', '0.0.0.0', '/usr/local/bin/lazydocker']
+    print(f"Launching ttyd with command: {' '.join(cmd)}")
+    
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    
+    # Check if process started successfully
+    if process.poll() is None:
+        print(f"ttyd started successfully with PID {process.pid}")
+    else:
+        stdout, stderr = process.communicate()
+        print(f"ttyd failed to start. stdout: {stdout}, stderr: {stderr}")
+    
+    return render_template('terminal.html')
 
 @monitor_bp.route('/monitoring/ws/<command>', websocket=True)
 def terminal_ws(command):
