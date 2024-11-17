@@ -1,6 +1,5 @@
 version: '3.8'
+
 services:
-  app:
-    image: nginx:alpine  # Use a simple service for testing
-    ports:
-      - "8080:80"
+  test_hello:
+    image: hello-world  # Use the lightweight "hello-world" image

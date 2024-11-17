@@ -13,3 +13,32 @@
  * Running on http://127.0.0.1:8080
  * Running on http://172.19.0.2:8080
 2024-11-17 11:39:33,299 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 11:44:11,134 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 11:44:11,134 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 11:52:10,985 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 11:52:10,985 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 12:04:12,057 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 12:04:12,057 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 12:08:57,365 - INFO - 172.19.0.1 - - [17/Nov/2024 12:08:57] "[33mGET / HTTP/1.1[0m" 404 -
+2024-11-17 12:08:57,393 - INFO - 172.19.0.1 - - [17/Nov/2024 12:08:57] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-11-17 12:09:01,624 - INFO - 172.19.0.1 - - [17/Nov/2024 12:09:01] "[33mGET / HTTP/1.1[0m" 404 -
+2024-11-17 12:09:02,921 - INFO - 172.19.0.1 - - [17/Nov/2024 12:09:02] "[33mGET / HTTP/1.1[0m" 404 -
+2024-11-17 12:11:52,382 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 12:11:52,383 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 12:22:44,066 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 12:22:44,066 - INFO - [33mPress CTRL+C to quit[0m
