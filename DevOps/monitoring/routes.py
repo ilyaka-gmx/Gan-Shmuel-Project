@@ -101,7 +101,7 @@ def container_list():
 @login_required
 def launch_htop():
     # Start ttyd with full path and explicit arguments
-    cmd = ['/usr/local/bin/ttyd', '-p', '7681', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', 'htop']
+    cmd = ['/usr/local/bin/ttyd', '-p', '8085', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', 'htop']
     print(f"Launching ttyd with command: {' '.join(cmd)}")
     
     process = subprocess.Popen(
@@ -131,7 +131,7 @@ def terminal_ws(command):
     print(f"WebSocket endpoint registered for: /monitoring/ws/{command}")
     async def proxy():
         print(f"Starting proxy for {command}")
-        port = '7681'
+        port = '8085'
         async with websockets.connect(f'ws://localhost:{port}') as ttyd:
             print(f"Connected to ttyd on port {port}")
             while True:

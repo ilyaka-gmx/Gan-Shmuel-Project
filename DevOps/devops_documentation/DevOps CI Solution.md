@@ -196,6 +196,17 @@ curl http://localhost:8080/monitoring
    - Check testing logs
    - Validate docker and docker-compose files
 
+### Full Docker Re-build
+In case of issues that look sporadical and not reproducible, try a full re-build:
+
+```bash
+docker-compose down
+docker system prune -f
+docker volume prune -f
+docker-compose build --no-cache
+docker-compose up
+```
+
 ### Health Checks
 - Check CI portal Status
 ```python
