@@ -1,3 +1,20 @@
 ./ci_script.sh: line 100: syntax error near unexpected token `}'
 ./ci_script.sh: line 100: syntax error near unexpected token `}'
 ./ci_script.sh: line 100: syntax error near unexpected token `}'
+./ci_script.sh: line 100: syntax error near unexpected token `}'
+./ci_script.sh: line 100: syntax error near unexpected token `}'
+[2024-11-17 13:17:40] Starting CI process for branch 
+[2024-11-17 13:17:40] Commit: 
+[2024-11-17 13:17:40] Repository: 
+[2024-11-17 13:17:40] Cloning repository...
+fatal: repository 'repo' does not exist
+[2024-11-17 13:17:40] Cleaning up test environment...
+Removing network app_default
+[2024-11-17 13:17:55] Starting CI process for branch 
+[2024-11-17 13:17:55] Commit: 
+[2024-11-17 13:17:55] Repository: 
+[2024-11-17 13:17:55] Cloning repository...
+fatal: repository 'repo' does not exist
+[2024-11-17 13:17:55] Cleaning up test environment...
+Removing network app_default
+Network app_default not found.

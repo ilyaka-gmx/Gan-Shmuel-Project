@@ -47,3 +47,21 @@
  * Running on http://127.0.0.1:8080
  * Running on http://172.19.0.2:8080
 2024-11-17 12:53:01,629 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 13:12:46,032 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 13:12:46,032 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 13:17:18,372 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.19.0.2:8080
+2024-11-17 13:17:18,373 - INFO - [33mPress CTRL+C to quit[0m
+2024-11-17 13:18:43,803 - INFO - 172.19.0.1 - - [17/Nov/2024 13:18:43] "[33mGET / HTTP/1.1[0m" 404 -
+2024-11-17 13:18:43,849 - INFO - 172.19.0.1 - - [17/Nov/2024 13:18:43] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-11-17 13:18:50,337 - INFO - 172.19.0.1 - - [17/Nov/2024 13:18:50] "GET /health HTTP/1.1" 200 -
+2024-11-17 13:18:50,389 - ERROR - 172.19.0.1 - - [17/Nov/2024 13:18:50] code 400, message Bad request version ('\x94\x17SÙ\x0fÜ\x16à¥¸Ò]\x04I&\x8a\x13Wç\x7f\x8b\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À')
+2024-11-17 13:18:50,389 - INFO - 172.19.0.1 - - [17/Nov/2024 13:18:50] "[35m[1m\x16\x03\x01\x07K\x01\x00\x07G\x03\x03lnj|\x10"à+8\x04ò\x0f\x83<\x866Í:ÊÅ\x13\x1a\x8b§EÝd\x89D\x90\x98\x0c Æ4\x9e\x1a*L,W\x8f\x93\x85\x94\x17SÙ\x0fÜ\x16à¥¸Ò]\x04I&\x8a\x13Wç\x7f\x8b\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À[0m" HTTPStatus.BAD_REQUEST -
+2024-11-17 13:18:50,390 - ERROR - 172.19.0.1 - - [17/Nov/2024 13:18:50] code 400, message Bad request version ('\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À')
+2024-11-17 13:18:50,390 - INFO - 172.19.0.1 - - [17/Nov/2024 13:18:50] "[35m[1m\x16\x03\x01\x02z\x01\x00\x02v\x03\x03qC:ê]¨\x95,æ\x86¾°\x07ÏH÷MÍ³G.Ö \x0eU]L6ãJ\x0d\x85 Ë\x0eH2\x8f7ÌøÞd"ÒÙ¨ðç4\x01´û)ÿ\x1f-\x82ß+aD\x8e\x9b \x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À[0m" HTTPStatus.BAD_REQUEST -
+2024-11-17 13:22:31,629 - INFO - 172.19.0.1 - - [17/Nov/2024 13:22:31] "GET /health HTTP/1.1" 200 -
