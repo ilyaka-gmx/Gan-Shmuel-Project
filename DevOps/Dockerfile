@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     docker-compose \
     git \
     curl \
+    htop \
+    util-linux \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ttyd for web terminal
