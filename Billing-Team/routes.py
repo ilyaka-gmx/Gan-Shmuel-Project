@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from functions.create_provider import create_provider
+from functions.health_check import check_health
 
 # Define a Blueprint for provider-related routes
 provider_bp = Blueprint('provider', __name__)
@@ -17,3 +18,17 @@ def provider():
 # Setup routes by registering the blueprint
 def setup_routes(app):
     app.register_blueprint(provider_bp)
+
+
+# Define a Blueprint for health-related routes
+health_bp = Blueprint('health', __name__)
+
+@health_bp.route('/health', methods=['GET'])
+def health():
+    # Call the health check function
+    status, status_code = check_health()
+    return jsonify(status), status_code
+
+# Register the Blueprint
+def setup_routes(app):
+    app.register_blueprint(health_bp)
