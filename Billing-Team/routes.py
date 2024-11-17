@@ -2,10 +2,9 @@
 from flask import Blueprint, request, jsonify
 from functions.create_provider import create_provider
 
-# Create a Blueprint for routes
-routes = Blueprint('routes', __name__)
+provder_bp = Blueprint('provider', __name__)
 
-@routes.route('/provide', methods=['POST'])
+@provder_bp.route('/provide', methods=['POST'])
 def provide():
     data = request.get_json()
     if data is None:
@@ -13,3 +12,6 @@ def provide():
 
     provider, status_code = create_provider(data)
     return jsonify(provider), status_code
+
+def setup_routes(app):
+    app.register_blueprint(provder_bp)
