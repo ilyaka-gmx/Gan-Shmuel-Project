@@ -2,4 +2,5 @@ version: '3.8'
 
 services:
   test_hello:
-    image: hello-world  # Use the lightweight "hello-world" image
+    image: alpine
+    command: ["sh", "-c", "while true; do sleep 30; done"]
