@@ -21,6 +21,7 @@ COPY webhook_server.py .
 COPY ci_script.sh .
 COPY notifier.py .
 COPY .env .
+COPY test_notification.py .
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/data

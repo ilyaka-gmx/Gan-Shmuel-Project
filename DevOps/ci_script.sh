@@ -13,24 +13,33 @@ log() {
 
 # Helper function for sending notifications
 # Could be extended to send emails, Slack messages, etc.
+# Helper function for sending notifications using Python notifier
 notify() {
     local status=$1    # SUCCESS or FAILURE
     local message=$2   # Detailed message
     
     log "CI ${status}: ${message}"
     
-    # Call Python notifier directly with heredoc
+    # Call Python notifier with proper environment variables and logging
     python3 << EOF
 from notifier import CINotifier
 import logging
+import os
 
+# Setup logging
 logging.basicConfig(level=logging.INFO)
+
+# Call notifier with all necessary information
 notifier = CINotifier()
-notifier.send_notification(
+success = notifier.send_notification(
     "${status}",
     "${message}",
-    "${LOG_FILE}"  # This is defined at the start of ci_script.sh
+    "${LOG_FILE}"
 )
+
+if not success:
+    print("Failed to send notification email!")
+    exit(1)
 EOF
 }
 
@@ -112,4 +121,4 @@ main() {
 trap cleanup EXIT
 
 # Run main function
-main                                                                                                                                                                                                            
+main                                                                                                                                                                           
