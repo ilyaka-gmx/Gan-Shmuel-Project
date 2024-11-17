@@ -19,6 +19,7 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY webhook_server.py .
 COPY ci_script.sh .
+COPY docker-compose.test.yml .
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/data
