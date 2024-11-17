@@ -1,24 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Terminal View</title>
-    <link rel="stylesheet" href="{{ url_for('monitoring.static', filename='styles.css') }}">
-    <script>
-        window.onload = function() {
-            const serverAddress = window.location.hostname;
-            // Use the base ttyd URL without additional path
-            window.location.href = `http://${serverAddress}:8085`;
-        }
-    </script>
-</head>
-<body>
-    <div class="monitor-container">
-        <h2>Terminal Monitor</h2>
-        <button onclick="window.close()">Close</button>
-    </div>
-</body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +25,6 @@
             const path = window.location.pathname;
             const port = path.includes('machine') ? '8085' : '8087';
             const ttydUrl = `http://${serverAddress}:${port}`;
-            // const ttydUrl = `http://${serverAddress}:8085`;
             // Create close button before redirect
             const closeBtn = document.createElement('button');
             closeBtn.className = 'close-button';

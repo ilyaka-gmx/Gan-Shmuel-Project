@@ -3,8 +3,6 @@ from functools import wraps
 import psutil
 import docker
 import subprocess
-import websockets
-import asyncio
 from flask_sock import Sock
 import socket
 import http.client
@@ -124,7 +122,6 @@ def launch_htop():
 @login_required
 def launch_lazydocker():
     # Start ttyd with full path and explicit arguments
-    # cmd = ['/usr/local/bin/ttyd', '-p', '8087', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', '/usr/local/bin/lazydocker']
     cmd = ['/usr/local/bin/ttyd', '-p', '8087', '-i', '0.0.0.0', '/usr/local/bin/lazydocker']
     print(f"Launching ttyd with command: {' '.join(cmd)}")
     
@@ -143,22 +140,6 @@ def launch_lazydocker():
         print(f"ttyd failed to start. stdout: {stdout}, stderr: {stderr}")
     
     return render_template('terminal.html')
-
-@monitor_bp.route('/monitoring/ws/<command>', websocket=True)
-def terminal_ws(command):
-    print(f"WebSocket endpoint registered for: /monitoring/ws/{command}")
-    async def proxy():
-        print(f"Starting proxy for {command}")
-        port = '8085'
-        async with websockets.connect(f'ws://localhost:{port}') as ttyd:
-            print(f"Connected to ttyd on port {port}")
-            while True:
-                message = await request.websocket.receive()
-                print(f"Received message: {message}")
-                await ttyd.send(message)
-                response = await ttyd.recv()
-                await request.websocket.send(response)
-    asyncio.run(proxy())
 
 
 def calculate_cpu_percent(stats):
