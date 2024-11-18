@@ -6,6 +6,8 @@ import os
 from datetime import datetime
 from monitoring import init_monitoring
 from flask_sock import Sock
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from werkzeug.serving import run_simple
 
 # Setup logging configuration
 logging.basicConfig(
@@ -18,19 +20,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Generate a random secret key for session management
-sock=Sock(app)
-init_monitoring(app, sock) # Register monitoring blueprint
-logger.info("Monitoring initialized with WebSocket. Routes: {[rule.rule for rule in app.url_map.iter_rules()]}")
+# Create separate apps for webhook and monitoring
+webhook_app = Flask('webhook')
+monitoring_app = Flask('monitoring')
+monitoring_app.secret_key = os.urandom(24)
+
+# Initialize monitoring with WebSocket
+sock = Sock(monitoring_app)
+init_monitoring(monitoring_app, sock)
+logger.info("Monitoring initialized with WebSocket. Routes: {[rule.rule for rule in monitoring_app.url_map.iter_rules()]}")
 
 # Basic health check endpoint
-@app.route('/health')
+@webhook_app.route('/health')
 def health():
     return {'status': 'OK'}, 200
 
 # Main webhook endpoint that GitHub will call
-@app.route('/github-webhook', methods=['POST'])
+@webhook_app.route('/github-webhook', methods=['POST'])
 def webhook():
     try:
         data = request.json
@@ -59,6 +65,9 @@ def webhook():
             }
         else:
             return {'status': 'Not a PR Merge or push event'}, 400
+        
+        # Log event information
+        logger.info(f"Received webhook event: {event_info}")
 
         # Save event information to a file
         event_file = f'/app/data/{timestamp}-{event_info["branch"]}_event.json'
@@ -99,7 +108,10 @@ def trigger_ci(event_info):
         logger.error(f"Failed to trigger CI: {str(e)}")
         raise
 
-# Start the Flask server
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+# Create dispatcher for different ports
+application = DispatcherMiddleware(monitoring_app, {
+    '/webhook': webhook_app
+})
 
+if __name__ == '__main__':
+    run_simple('0.0.0.0', 8080, application, use_reloader=True)
