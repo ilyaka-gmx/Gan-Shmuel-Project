@@ -46,7 +46,7 @@ def webhook():
         if event_type.startswith('pull'):
             event_info = {
                 'timestamp': timestamp,
-                'branch': 'master',  # Target branch is always master for merged PRs
+                'branch': data['pull_request']['base']['ref'],  # Target branch to which the PR was merged
                 'source_branch': data['pull_request']['head']['ref'],  # Branch that was merged
                 'repo': data['repository']['clone_url'],
                 'commit': data['pull_request']['merge_commit_sha'],
@@ -54,7 +54,6 @@ def webhook():
                 # 'commit_email': data['pull_request']['user']['email']
             }
             if data['action'] == 'closed' and data['pull_request'].get('merged'):
-                event_info['commit_email'] = data['pull_request']['user']['email']
                 logger.info(f"Received PR Merge closed event: {event_info}")
             elif data['action'] == 'closed' and not data['pull_request'].get('merged'):
                 logger.info(f"Received PR closed not merged event: {event_info}")
@@ -65,7 +64,7 @@ def webhook():
         elif event_type == 'push':  # Handle push event
             event_info = {
                 'timestamp': timestamp,
-                'branch': data['ref'].partition('/')[-1],
+                'branch': data['ref'].split("/")[-1],
                 'source_branch': '',  # Empty for direct pushes
                 'repo': data['repository']['clone_url'],
                 'commit': data['after'],
@@ -85,6 +84,10 @@ def webhook():
         with open(event_file, 'w') as f:
             json.dump(event_info, f, indent=2)
 
+        # Check if there is commit email in the event_info, if not, use the default email
+        if 'commit_email' not in event_info:
+            event_info['commit_email'] = 'default@example.com'
+            logger.info(f"Using default commit email: {event_info['commit_email']}")
         # Start the CI process
         trigger_ci(event_info)
 
