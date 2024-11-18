@@ -50,7 +50,8 @@ def webhook():
                 'source_branch': data['pull_request']['head']['ref'],  # Branch that was merged
                 'repo': data['repository']['clone_url'],
                 'commit': data['pull_request']['merge_commit_sha'],
-                'pusher': data['pull_request']['user']['login']
+                'pusher': data['pull_request']['user']['login'],
+                'commit_email': data['pull_request']['user']['email']
             }
             
         # Handle push event    
@@ -61,7 +62,7 @@ def webhook():
                 'source_branch': '',  # Empty for direct pushes
                 'repo': data['repository']['clone_url'],
                 'commit': data['after'],
-                'pusher': data['pusher']['name']
+                'pusher': data['pusher']['name'],
             }
         else:
             return {'status': 'Not a PR Merge or push event'}, 400
@@ -91,7 +92,8 @@ def trigger_ci(event_info):
             'BRANCH': event_info['branch'],
             'REPO_URL': event_info['repo'],
             'COMMIT_SHA': event_info['commit'],
-            'TIMESTAMP': event_info['timestamp']
+            'TIMESTAMP': event_info['timestamp'],
+            'COMMIT_EMAIL': event_info['commit_email']
         })
 
         # Run the CI script asynchronously (non-blocking)
@@ -110,7 +112,7 @@ def trigger_ci(event_info):
 
 # Create dispatcher for different ports
 application = DispatcherMiddleware(monitoring_app, {
-    '/webhook': webhook_app
+    '/github-webhook': webhook_app
 })
 
 if __name__ == '__main__':
