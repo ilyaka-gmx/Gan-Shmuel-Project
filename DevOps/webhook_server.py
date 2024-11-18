@@ -6,8 +6,6 @@ import os
 from datetime import datetime
 from monitoring import init_monitoring
 from flask_sock import Sock
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from werkzeug.serving import run_simple
 
 # Setup logging configuration
 logging.basicConfig(
@@ -20,58 +18,70 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Create separate apps for webhook and monitoring
-webhook_app = Flask('webhook')
-monitoring_app = Flask('monitoring')
-monitoring_app.secret_key = os.urandom(24)
-
-# Initialize monitoring with WebSocket
-sock = Sock(monitoring_app)
-init_monitoring(monitoring_app, sock)
-logger.info("Monitoring initialized with WebSocket. Routes: {[rule.rule for rule in monitoring_app.url_map.iter_rules()]}")
+app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Generate a random secret key for session management
+sock=Sock(app)
+init_monitoring(app, sock) # Register monitoring blueprint
+logger.info("Monitoring initialized with WebSocket. Routes: {[rule.rule for rule in app.url_map.iter_rules()]}")
 
 # Basic health check endpoint
-@webhook_app.route('/health')
+@app.route('/health')
 def health():
     return {'status': 'OK'}, 200
 
 # Main webhook endpoint that GitHub will call
-@webhook_app.route('/github-webhook', methods=['POST'])
+@app.route('/github-webhook', methods=['POST'])
 def webhook():
     try:
         data = request.json
+        event_type = request.headers.get('X-GitHub-Event')
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+        # First check if this is a push or PR event
+        if event_type == 'ping':  # This indicates it's a ping event
+            logger.info(f"Received ping event from GitHub: data={data['zen']}")
+            return {'status': 'Ping received'}, 200            
         
-        # Handle PR merge event
-        if data['event'] == 'pull_request' and data['action'] == 'closed' and data['pull_request'].get('merged'):
+        # Handle PR merge event (event_type starts with 'pull' - e.g. 'pull.closed', 'pull.opened', etc.)
+        if event_type.startswith('pull'):
             event_info = {
                 'timestamp': timestamp,
                 'branch': 'master',  # Target branch is always master for merged PRs
                 'source_branch': data['pull_request']['head']['ref'],  # Branch that was merged
                 'repo': data['repository']['clone_url'],
                 'commit': data['pull_request']['merge_commit_sha'],
-                'pusher': data['pull_request']['user']['login'],
-                'commit_email': data['pull_request']['user']['email']
+                'pusher': data['pull_request']['user']['login']
+                # 'commit_email': data['pull_request']['user']['email']
             }
-            
-        # Handle push event    
-        elif data['event'] == 'push':
+            if data['action'] == 'closed' and data['pull_request'].get('merged'):
+                event_info['commit_email'] = data['pull_request']['user']['email']
+                logger.info(f"Received PR Merge closed event: {event_info}")
+            elif data['action'] == 'closed' and not data['pull_request'].get('merged'):
+                logger.info(f"Received PR closed not merged event: {event_info}")
+                return {'status': 'PR closed not merged'}, 220
+            elif data['action'] != 'closed':
+                logger.info(f"Received non closed PR event: {event_info}")
+                return {'status': f"Non closed PR event '{event_type}': action={data['action']}"}, 220
+        elif event_type == 'push':  # Handle push event
             event_info = {
                 'timestamp': timestamp,
-                'branch': data['ref'].partition('refs/heads/')[-1],
+                'branch': data['ref'].partition('/')[-1],
                 'source_branch': '',  # Empty for direct pushes
                 'repo': data['repository']['clone_url'],
                 'commit': data['after'],
                 'pusher': data['pusher']['name'],
+                'commit_email': data['pusher']['email']
             }
         else:
-            return {'status': 'Not a PR Merge or push event'}, 400
+            logger.warning(f"Not a PR Merge or push event: event_type={event_type}, action={data['action']}")
+            return {'status': f"Not a PR Merge or push event '{event_type}': action={data['action']}"}, 400
         
         # Log event information
         logger.info(f"Received webhook event: {event_info}")
 
+        # Save event information to a file. Use the branch name as part of the filename
         # Save event information to a file
-        event_file = f'/app/data/{timestamp}-{event_info["branch"]}_event.json'
+        event_file = f'/app/data/{timestamp}-{event_info["branch"].split("/")[-1]}_event.json'
         with open(event_file, 'w') as f:
             json.dump(event_info, f, indent=2)
 
@@ -110,10 +120,7 @@ def trigger_ci(event_info):
         logger.error(f"Failed to trigger CI: {str(e)}")
         raise
 
-# Create dispatcher for different ports
-application = DispatcherMiddleware(monitoring_app, {
-    '/github-webhook': webhook_app
-})
-
+# Start the Flask server
 if __name__ == '__main__':
-    run_simple('0.0.0.0', 8080, application, use_reloader=True)
+    app.run(host='0.0.0.0', port=8080)
+
