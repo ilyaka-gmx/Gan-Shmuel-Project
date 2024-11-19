@@ -118,11 +118,11 @@ cleanup() {
         docker-compose -f "Billing-Team/docker-compose.${environment}.yml" down --volumes --remove-orphans || true
     fi
     
-    # Remove any leftover test containers with our project prefix
-    docker ps -a | grep "ci_test_" | awk '{print $1}' | xargs -r docker rm -f || true
-    # Remove any leftover test networks with our project prefix
+    # # Remove any leftover test containers with our project prefix
+    # docker ps -a | grep "ci_test_" | awk '{print $1}' | xargs -r docker rm -f || true
+    # # Remove any leftover test networks with our project prefix
 
-    docker network ls | grep "ci_test_" | awk '{print $1}' | xargs -r docker network rm || true
+    # docker network ls | grep "ci_test_" | awk '{print $1}' | xargs -r docker network rm || true
     
     # Clean up repository if it exists
     if [ -d "repo" ]; then
@@ -146,9 +146,17 @@ deploy_service() {
     #log "DEBUG: Current directory: $(pwd)"
     
     if [ "$environment" = "test" ]; then
-        docker network create ci_test_network 2>/dev/null || true
+        # docker network create ci_test_network 2>/dev/null || true
+        log "Creating test network..."
+        if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_test_network" ci_test_network 2>/dev/null; then
+            log "Test network already exists or failed to create"
+        fi
     else
-        docker network create ci_prod_network 2>/dev/null || true
+        log "Creating production network..."
+        if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_prod_network" ci_prod_network 2>/dev/null; then
+            log "Production network already exists or failed to create"
+        fi    
+        # docker network create ci_prod_network 2>/dev/null || true
     fi
     
     # Map service names to directory names

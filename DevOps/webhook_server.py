@@ -71,6 +71,10 @@ def webhook():
                 'pusher': data['pusher']['name'],
                 'commit_email': data['pusher']['email']
             }
+            # Check if the push was to the new branch creation, skip if so
+            if event_info['commit'] == [] and data['before'] == '0' * 40:   # Check if the commit is an empty list
+                logger.info(f"Skipping empty push event, seems to be new branch: {event_info}")
+                return {'status': 'Skipping new branch create push event'}, 220
         else:
             logger.warning(f"Not a PR Merge or push event: event_type={event_type}, action={data['action']}")
             return {'status': f"Not a PR Merge or push event '{event_type}': action={data['action']}"}, 400
