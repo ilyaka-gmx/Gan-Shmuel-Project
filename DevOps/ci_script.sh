@@ -118,8 +118,11 @@ cleanup() {
         docker-compose -f "Billing-Team/docker-compose.${environment}.yml" down --volumes --remove-orphans || true
     fi
     
-    # Remove any leftover containers with our project prefix
+    # Remove any leftover test containers with our project prefix
     docker ps -a | grep "ci_test_" | awk '{print $1}' | xargs -r docker rm -f || true
+    # Remove any leftover test networks with our project prefix
+
+    docker network ls | grep "ci_test_" | awk '{print $1}' | xargs -r docker network rm || true
     
     # Clean up repository if it exists
     if [ -d "repo" ]; then
@@ -259,6 +262,12 @@ run_tests() {
 deploy_production() {
     #log "DEBUG: Starting production deployment function"
     log "Starting production deployment..."
+
+    # Create production network if it doesn't exist
+    if ! docker network create ci_prod_network; then
+        notify "FAILURE" "Failed to create production network"
+        return 1
+    fi  
     
     # Deploy weight service first
     if ! deploy_service "weight" "prod"; then
@@ -299,6 +308,13 @@ main() {
     cleanup "prod"
     
     trap 'cleanup "test"; cleanup "prod"' EXIT
+
+    # Create network for testing
+    log "Creating test network..."
+    if ! docker network create ci_test_network 2>/dev/null; then
+        notify "FAILURE" "Failed to create test network"
+        exit 1
+    fi
     
     # Clone repository
     log "Cloning repository..."
