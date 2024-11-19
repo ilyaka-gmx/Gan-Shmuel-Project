@@ -119,7 +119,7 @@ cleanup() {
     fi
     
     # # Remove any leftover test containers with our project prefix
-    # docker ps -a | grep "ci_test_" | awk '{print $1}' | xargs -r docker rm -f || true
+    docker ps -a | grep "ci_test_" | awk '{print $1}' | xargs -r docker rm -f || true
     # # Remove any leftover test networks with our project prefix
 
     # docker network ls | grep "ci_test_" | awk '{print $1}' | xargs -r docker network rm || true
@@ -313,7 +313,6 @@ main() {
     
     # Ensure clean start
     cleanup "test"
-    cleanup "prod"
     
     trap 'cleanup "test"; cleanup "prod"' EXIT
 
