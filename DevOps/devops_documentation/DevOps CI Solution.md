@@ -140,7 +140,7 @@ sudo rm -rf temp
 cd DevOps
 
 # Delete unnecessary files
-sudo rm -r devops_documentation/ readme.txt webhook/
+sudo rm -r devops_documentation/ readme.txt 
 ```
 
 #### Docker Configuration
