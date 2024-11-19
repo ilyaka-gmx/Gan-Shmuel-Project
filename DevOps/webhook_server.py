@@ -76,10 +76,16 @@ def webhook():
                 logger.info(f"Skipping new branch create push event: {event_info}")
                 return {'status': 'Skipping new branch create push event'}, 220
 
+            # Check if this is a deletion of a branch
+            if data['after'] == '0' * 40:
+                logger.info(f"Received branch deletion event: {event_info}")
+                return {'status': 'Branch deletion event'}, 220
+
             # Check if this is a push to master that might have been covered by a PR merge
             if event_info['branch'] == 'master' and event_info['source_branch'] == '':
                 logger.info(f"Received push event to master, which was covered by a PR Merge already: {event_info}")
                 return {'status': 'Skipping push event to master, which was covered by a PR Merge already'}, 220
+
             # Otherwise, this is a normal push event    
             logger.info(f"Received feature branch push event: {event_info}")
         else:
