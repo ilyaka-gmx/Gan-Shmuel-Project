@@ -105,8 +105,8 @@ def trigger_ci(event_info):
             'BRANCH': event_info['branch'],
             'REPO_URL': event_info['repo'],
             'COMMIT_SHA': event_info['commit'],
-            'TIMESTAMP': event_info['timestamp'],
-            'COMMIT_EMAIL': event_info['commit_email']
+            'TIMESTAMP': event_info['timestamp']
+            # 'COMMIT_EMAIL': event_info['commit_email']
         })
 
         # Run the CI script asynchronously (non-blocking)

@@ -30,11 +30,14 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies in the virtual environment
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy application files
 COPY webhook_server.py .
 COPY ci_script.sh .
+COPY notifier.py .
+COPY .env .
+COPY test_notification.py .
 
 # Create necessary directories
 RUN mkdir -p /app/logs /app/data
