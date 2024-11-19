@@ -83,8 +83,7 @@ def webhook():
 
             # Check if this is a push to master that might have been covered by a PR merge
             if event_info['branch'] == 'master' and event_info['source_branch'] == '':
-                logger.info(f"Received push event to master, which was covered by a PR Merge already: {event_info}")
-                return {'status': 'Skipping push event to master, which was covered by a PR Merge already'}, 220
+                logger.info(f"Received push event to master, following PR Merge: {event_info}")
 
             # Otherwise, this is a normal push event    
             logger.info(f"Received feature branch push event: {event_info}")
