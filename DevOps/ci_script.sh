@@ -314,7 +314,7 @@ main() {
     # Ensure clean start
     cleanup "test"
     
-    trap 'cleanup "test"; cleanup "prod"' EXIT
+    trap 'cleanup "test"' EXIT
 
     # # Create network for testing
     # log "Creating test network..."
