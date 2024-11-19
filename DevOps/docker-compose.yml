@@ -22,16 +22,16 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}  # Will be taken from host environment
       - SENDER_EMAIL=${SMTP_USER}
       - RECIPIENT_EMAILS=${RECIPIENT_EMAILS}
-    # networks:
-    #   - ci_test_network
-    #   - ci_prod_network
-    # pid: "host"
+    networks:
+      - ci_test_network
+      - ci_prod_network
+    pid: "host"
     privileged: true
     restart: always
 
-# networks:
-#   ci_test_network:
-#     name: ci_test_network
-#     external: true
-#   ci_prod_network:    
-#     external: true
+networks:
+  ci_test_network:
+    name: ci_test_network
+    external: true
+  ci_prod_network:    
+    external: true

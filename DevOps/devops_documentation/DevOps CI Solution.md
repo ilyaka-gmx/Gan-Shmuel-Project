@@ -148,6 +148,10 @@ sudo systemctl enable docker
 # Add current user to docker group
 sudo usermod -aG docker $USER
 newgrp docker
+
+# Create docker networks
+docker network create ci_test_network
+docker network create ci_prod_network
 ```
 #### Deploy CI and Monitoring Containers
 ```bash
@@ -207,6 +211,11 @@ docker-compose build --no-cache
 docker-compose up
 ```
 
+As well, ensure that docker networks exist and create them if not:
+```bash
+docker network create ci_test_network
+docker network create ci_prod_network
+```
 ### Health Checks
 - Check CI portal Status
 ```python

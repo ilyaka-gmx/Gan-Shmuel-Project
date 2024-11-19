@@ -146,17 +146,17 @@ deploy_service() {
     #log "DEBUG: Current directory: $(pwd)"
     
     if [ "$environment" = "test" ]; then
-        # docker network create ci_test_network 2>/dev/null || true
         log "Creating test network..."
-        if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_test_network" ci_test_network 2>/dev/null; then
-            log "Test network already exists or failed to create"
-        fi
+        docker network create ci_test_network 2>/dev/null || true
+        # if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_test_network" ci_test_network 2>/dev/null; then
+        #     log "Test network already exists or failed to create"
+        # fi
     else
         log "Creating production network..."
-        if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_prod_network" ci_prod_network 2>/dev/null; then
-            log "Production network already exists or failed to create"
-        fi    
-        # docker network create ci_prod_network 2>/dev/null || true
+        docker network create ci_prod_network 2>/dev/null || true
+        # if ! docker network create --driver bridge --opt "com.docker.network.bridge.name"="ci_prod_network" ci_prod_network 2>/dev/null; then
+        #     log "Production network already exists or failed to create"
+        # fi    
     fi
     
     # Map service names to directory names
@@ -317,12 +317,12 @@ main() {
     
     trap 'cleanup "test"; cleanup "prod"' EXIT
 
-    # Create network for testing
-    log "Creating test network..."
-    if ! docker network create ci_test_network 2>/dev/null; then
-        notify "FAILURE" "Failed to create test network"
-        exit 1
-    fi
+    # # Create network for testing
+    # log "Creating test network..."
+    # if ! docker network create ci_test_network 2>/dev/null; then
+    #     notify "FAILURE" "Failed to create test network"
+    #     exit 1
+    # fi
     
     # Clone repository
     log "Cloning repository..."
