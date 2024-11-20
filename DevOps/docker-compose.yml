@@ -7,7 +7,6 @@ services:
       - "8080:8080"  # For github webhook and monitoring menu
       - "8085:8085"  # For htop monitoring
       - "8087:8087"  # For lazydocker
-      # - "8088:8088"  # For Ranger
       - "8089:8089"  # For Midnight Commander
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock  # For managing external containers
