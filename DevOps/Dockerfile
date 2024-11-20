@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-# Install necessary packages
+# Install necessary packages (if Ranger is needed, add it here)
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     htop \
     util-linux \
+    mc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install ttyd for web terminal

@@ -1,22 +1,36 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Monitoring Menu</title>
     <link rel="stylesheet" href="{{ url_for('monitoring.static', filename='styles.css') }}">
+    <script src="{{ url_for('monitoring.static', filename='theme.js') }}"></script>
 </head>
 <body>
     <div class="menu-container">
-        <h2>Monitoring Menu</h2>
-        <a href="{{ url_for('monitoring.machine') }}">
-            <button class="menu-button">Machine Monitoring</button>
-        </a>
-        <a href="{{ url_for('monitoring.containers') }}">
-            <button class="menu-button">Containers Monitoring</button>
-        </a>
-        <a href="{{ url_for('monitoring.login') }}">
-            <button class="menu-button">Logout</button>
-        </a>
+        <div class="container-header">
+            <h2>Monitoring Menu</h2>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="sun">☀️</span>
+                <span class="moon">🌙</span>
+            </button>
+        </div>
+
+        <div class="menu-buttons">
+            <a href="{{ url_for('monitoring.machine') }}">
+                <button class="menu-button">Machine Monitoring</button>
+            </a>
+            <a href="{{ url_for('monitoring.containers') }}">
+                <button class="menu-button">Containers Monitoring</button>
+            </a>
+            <a href="{{ url_for('monitoring.launch_mc') }}" target="_blank">
+                <button class="menu-button">Midnight Commander</button>
+            </a>
+            <a href="{{ url_for('monitoring.login') }}">
+                <button class="menu-button">Logout</button>
+            </a>
+        </div>
     </div>
 </body>
 </html>
+
+<!-- if Ranger is needed, add it to the menu  -->

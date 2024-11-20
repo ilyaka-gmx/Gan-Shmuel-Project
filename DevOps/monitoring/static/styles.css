@@ -1,53 +1,216 @@
+/* styles.css */
 
-/* Common containers */
-.login-container, .menu-container {
-    width: 300px;
-    margin: 100px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* General Styles */
+/* :root {
+    --bg-color: #f4f4f4;
+    --text-color: #333; 
+    --input-bg: #ffffff;
+    --input-border: #ddd;
+    --accent-color: #007bff;
+    --hover-color: #0056b3; 
 }
 
-.monitor-container {
-    width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
+[data-theme='dark'] {
+    --bg-color: #121212; 
+    --text-color: #e0e0e0; 
+    --input-bg: #1e1e1e; 
+    --input-border: #444;
+    --accent-color: #4da6ff;
+    --hover-color: #6eb4ff; 
+} */
+
+/* Light Theme (Default) */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --input-bg: #f9f9f9;
+    --input-border: #dcdcdc;
+    --accent-color: #0b5fff;
+    --hover-color: #0845b5;
 }
 
-/* Buttons */
-.menu-button {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
+/* Dark Theme */
+[data-theme='dark'] {
+    --bg-color: #0d1117;
+    --text-color: #c9d1d9;
+    --input-bg: #161b22;
+    --input-border: #30363d;
+    --accent-color: #58a6ff;
+    --hover-color: #1f6feb;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+/* Container Styles */
+.menu-container,
+.login-container,
+.monitor-container,
+.ci-logs-container {
+    max-width: 800px;      /* Limits the container width */
+    margin: 0 auto;        /* Centers the container */
+    padding: 0 20px;       /* Adds horizontal padding */
+}
+
+.container-header {
+    display: flex;
+    justify-content: space-between; /* Positions items at the ends */
+    align-items: center;            /* Vertically centers items */
+    border: 1px solid #ccc;  /* Adds a border */
     padding: 10px;
+}
+
+/* Theme Toggle Button Styles */
+.theme-toggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    /* Optional: Adjust margin to move button away from edge */
+    margin-right: 10px;
+}
+
+/* Sun and Moon Icons */
+/* .theme-toggle .sun,
+.theme-toggle .moon {
+    display: noon;
+} */
+
+.theme-toggle .sun { display: none; }
+.theme-toggle .moon { display: inline; }
+
+[data-theme='dark'] .theme-toggle .sun { display: inline; }
+[data-theme='dark'] .theme-toggle .moon { display: none; }
+/* Title Styles */
+.container-header h2 {
+    margin: 0;                  /* Removes default margin */
+}
+
+/* Menu Buttons Styles */
+.menu-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;           /* Adds space between header and buttons */
+}
+
+.menu-button {
+    width: 100%;
+    padding: 15px;
     font-size: 16px;
     cursor: pointer;
 }
 
-/* Monitoring elements */
-.metric-bar {
-    margin: 10px 0;
-    padding: 10px;
-    background: #f0f0f0;
-    border-radius: 3px;
+/* Media Query for Responsive Design */
+@media (max-width: 600px) {
+    .menu-buttons {
+        grid-template-columns: 1fr;
+    }
 }
 
-.container-list {
-    margin: 20px 0;
+/* Additional Styles for Forms */
+.form-group {
+    margin-bottom: 15px;
 }
 
-.container-item {
-    padding: 10px;
-    margin: 5px 0;
-    background: #f0f0f0;
-    border-radius: 3px;
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
 }
 
-/* Status indicators */
-.refresh-rate {
-    font-size: 12px;
-    color: #666;
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Styles for CI Logs Page */
+.ci-logs-container {
+    display: flex;
     margin-top: 20px;
+}
+
+.logs-panel {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.log-content-panel {
+    flex: 2;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.log-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.log-item:hover {
+    background-color: #f9f9f9;
+}
+
+/* Adjusted Button Styles */
+button {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+button:hover {
+    background-color: var(--hover-color); /* #0056b3; */
+}
+
+/* Style for Last Updated Text */
+.refresh-rate {
+    margin-top: 20px;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--text-color); /* #666 */;
+    opacity: 0.7;
+    /* justify-content: center; */
     text-align: center;
 }
+
+/* Remove blue box around toggle icon */
+.theme-toggle:focus {
+    outline: none;
+}
+
+/* Keep focus outline when navigating via keyboard */
+.theme-toggle:focus-visible {
+    outline: none; /* Customize focus style if desired */
+}
+
+/* Remove focus outlines on mouse click but keep for keyboard navigation */
+*:focus {
+    outline: none;
+}
+
+
+/* Accessibility focus states */
+*:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* ...Add any additional styles needed for your site... */

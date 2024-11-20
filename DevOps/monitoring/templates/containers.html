@@ -2,29 +2,59 @@
 <html>
 <head>
     <title>Container Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('monitoring.static', filename='styles.css') }}">
+    <script src="{{ url_for('monitoring.static', filename='theme.js') }}"></script>
+    
     <style>
         .monitor-container {
-            width: 800px;
+            max-width: 900px;
             margin: 50px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
         }
-        .container-list {
-            margin: 20px 0;
+        .containers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
         }
-        .container-item {
-            padding: 10px;
-            margin: 5px 0;
-            background: #f0f0f0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .container-card {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        .refresh-rate {
-            font-size: 12px;
-            color: #666;
-            margin-top: 20px;
-            text-align: center;
+        .container-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .container-name {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+        .container-details {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .container-status {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+            display: inline-block;
+        }
+        .status-running {
+            background-color: green;
+        }
+        .status-stopped {
+            background-color: red;
         }
     </style>
     <script>
@@ -32,28 +62,53 @@
             fetch('/monitoring/containers/list')
                 .then(response => response.json())
                 .then(data => {
-                    const containerList = document.getElementById('containerList');
-                    containerList.innerHTML = '';
+                    const containerGrid = document.getElementById('containerGrid');
+                    containerGrid.innerHTML = '';
                     data.containers.forEach(container => {
-                        containerList.innerHTML += `
-                            <div class="container-item">
-                                ${container.name} | ${container.status} | CPU: ${container.cpu}% | MEM: ${container.memory}MB | Created: ${container.created} | Size: ${container.size.toFixed(2)}MB
-                            </div>`;
+                        const containerCard = document.createElement('div');
+                        containerCard.className = 'container-card';
+                        containerCard.innerHTML = `
+                            <div class="container-name">${container.name}</div>
+                            <div class="container-details">
+                                <div>
+                                    <span>Status:</span> 
+                                    <span class="status-indicator ${container.status === 'running' ? 'status-running' : 'status-stopped'}"></span>
+                                    ${container.status}
+                                </div>
+                                <div>CPU: ${container.cpu}%</div>
+                                <div>Memory: ${container.memory}MB</div>
+                                <div>Size: ${container.size.toFixed(2)}MB</div>
+                                <div>Created: ${container.created}</div>
+                            </div>
+                        `;
+                        containerGrid.appendChild(containerCard);
                     });
                 });
         }
-        setInterval(refreshContainers, 2000);
+        setInterval(refreshContainers, 10000);
+        window.onload = refreshContainers;
     </script>
 </head>
 <body>
     <div class="monitor-container">
-        <h2>Container Monitoring</h2>
-        <div id="containerList" class="container-list">Loading containers...</div>
+        <div class="container-header">
+            <h2>Container Monitoring</h2>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="sun">☀️</span>
+                <span class="moon">🌙</span>
+            </button>
+        </div>
         
-        <button onclick="window.open('/monitoring/containers/terminal', '_blank')">Launch LazyDocker</button>
-        <a href="{{ url_for('monitoring.menu') }}"><button>Back to Menu</button></a>
+        <div id="containerGrid" class="containers-grid">
+            Loading containers...
+        </div>
         
-        <div class="refresh-rate">Refreshing every 5 seconds</div>
+        <div class="container-actions">
+            <button onclick="window.open('/monitoring/containers/terminal', '_blank')">Launch LazyDocker</button>
+            <a href="{{ url_for('monitoring.menu') }}"><button>Back to Menu</button></a>
+        </div>
+        
+        <div class="refresh-rate">Refreshing every 10 seconds</div>
     </div>
 </body>
 </html>

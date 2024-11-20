@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify
 from functools import wraps
 import psutil
-import docker
+import os
 import subprocess
 from flask_sock import Sock
 import socket
@@ -168,4 +168,49 @@ def calculate_memory_usage(stats):
     usage = memory_stats['usage']
     return round(usage / (1024 * 1024), 2)  # Convert to MB
 
+# @monitor_bp.route('/monitoring/ranger/terminal')
+# @login_required
+# def launch_ranger():
+#     # Start ttyd with nsenter to launch ranger from host's logs directory
+#     # cmd = ['/usr/local/bin/ttyd', '-p', '8088', '-i', '0.0.0.0', 'nsenter', '-t', '1', '-m', '-p', '/usr/bin/ranger', './log/']
+#     cmd = ['/usr/local/bin/ttyd', '-p', '8088', '-i', '0.0.0.0', '/usr/bin/ranger', '/app/logs/']
+#     print(f"Launching ttyd with command: {' '.join(cmd)}")
+    
+#     process = subprocess.Popen(
+#         cmd,
+#         stdout=subprocess.PIPE,
+#         stderr=subprocess.PIPE,
+#         universal_newlines=True
+#     )
+    
+#     # Check if process started successfully
+#     if process.poll() is None:
+#         print(f"ttyd started successfully with PID {process.pid}")
+#     else:
+#         stdout, stderr = process.communicate()
+#         print(f"ttyd failed to start. stdout: {stdout}, stderr: {stderr}")
+    
+#     return render_template('terminal.html')
 
+@monitor_bp.route('/monitoring/mc/terminal')
+@login_required
+def launch_mc():
+    # Start ttyd with nsenter to launch mc from host's logs directory
+    cmd = ['/usr/local/bin/ttyd', '-p', '8089', '-i', '0.0.0.0', '/usr/bin/mc', '--skin', 'julia256', '/app/logs/']
+    print(f"Launching ttyd with command: {' '.join(cmd)}")
+    
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True
+    )
+    
+    # Check if process started successfully
+    if process.poll() is None:
+        print(f"ttyd started successfully with PID {process.pid}")
+    else:
+        stdout, stderr = process.communicate()
+        print(f"ttyd failed to start. stdout: {stdout}, stderr: {stderr}")
+    
+    return render_template('terminal.html')

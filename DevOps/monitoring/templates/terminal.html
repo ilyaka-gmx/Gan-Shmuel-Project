@@ -19,28 +19,45 @@
             background: #cc0000;
         }
     </style>
-    <script>
-        window.onload = function() {
-            const serverAddress = window.location.hostname;
-            const path = window.location.pathname;
-            const port = path.includes('machine') ? '8085' : '8087';
-            const ttydUrl = `http://${serverAddress}:${port}`;
-            // Create close button before redirect
-            const closeBtn = document.createElement('button');
-            closeBtn.className = 'close-button';
-            closeBtn.innerHTML = 'Close';
-            closeBtn.onclick = () => window.close();
-            document.body.appendChild(closeBtn);
-            // Load ttyd in an iframe
-            const iframe = document.createElement('iframe');
-            iframe.src = ttydUrl;
-            iframe.style.width = '100%';
-            iframe.style.height = '100vh';
-            iframe.style.border = 'none';
-            document.body.appendChild(iframe);
+<script>
+    window.onload = function() {
+        const serverAddress = window.location.hostname;
+        const path = window.location.pathname;
+
+        let port;
+        if (path.includes('machine')) {
+            // For htop (Machine Monitoring)
+            port = '8085';
+        // } else if (path.includes('ranger')) {
+        //     // For Ranger File Manager
+        //     port = '8088';
+        } else if (path.includes('mc')) {
+            // For Midnight Commander
+            port = '8089';
+        } else if (path.includes('containers')) {
+            // For Containers Monitoring
+            port = '8087';
+        } else {
+            // Default port (you can adjust this if needed)
+            port = '8080';
         }
-    </script>
-</head>
+
+        const ttydUrl = `http://${serverAddress}:${port}`;
+        // Create close button before redirect
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-button';
+        closeBtn.innerHTML = 'Close';
+        closeBtn.onclick = () => window.close();
+        document.body.appendChild(closeBtn);
+        // Load ttyd in an iframe
+        const iframe = document.createElement('iframe');
+        iframe.src = ttydUrl;
+        iframe.style.width = '100%';
+        iframe.style.height = '100vh';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+    }
+</script></head>
 <body style="margin:0; padding:0;">
 </body>
 </html>

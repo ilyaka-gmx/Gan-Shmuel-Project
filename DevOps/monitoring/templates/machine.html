@@ -1,33 +1,107 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Machine Monitoring</title>
     <link rel="stylesheet" href="{{ url_for('monitoring.static', filename='styles.css') }}">
+    <script src="{{ url_for('monitoring.static', filename='theme.js') }}"></script>
+    <style>
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .metric-bar-container {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .metric-bar {
+            width: 100%;
+            height: 20px;
+            background-color: var(--button-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .metric-bar-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
     <script>
         function refreshMetrics() {
             fetch('/monitoring/machine/metrics')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('cpu').innerHTML = `CPU Usage: ${data.cpu}%`;
-                    document.getElementById('memory').innerHTML = `Memory Usage: ${data.memory}%`;
-                    document.getElementById('disk').innerHTML = `Disk Usage: ${data.disk}%`;
+                    updateMetricBar('cpu', data.cpu);
+                    updateMetricBar('memory', data.memory);
+                    updateMetricBar('disk', data.disk);
                 });
         }
-        setInterval(refreshMetrics, 2000);
+
+        function updateMetricBar(metricId, value) {
+            const metricElement = document.getElementById(metricId);
+            const metricValueElement = metricElement.querySelector('.metric-value');
+            const barFill = metricElement.querySelector('.metric-bar-fill');
+            
+            // Update text
+            metricValueElement.textContent = `${value}%`;
+            
+            // Update bar width
+            barFill.style.width = `${value}%`;
+        }
+
+        // Refresh metrics every 5 seconds
+        setInterval(refreshMetrics, 5000);
+        
+        // Initial refresh on page load
+        window.onload = refreshMetrics;
     </script>
 </head>
 <body>
     <div class="monitor-container">
-        <h2>Machine Monitoring</h2>
-        <div class="metric-bar" id="cpu">CPU Usage: Loading...</div>
-        <div class="metric-bar" id="memory">Memory Usage: Loading...</div>
-        <div class="metric-bar" id="disk">Disk Usage: Loading...</div>
+        <div class="container-header">
+            <h2>Machine Monitoring</h2>
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span class="sun">☀️</span>
+                <span class="moon">🌙</span>
+            </button>
+        </div>
         
-        <button onclick="window.open('/monitoring/machine/terminal', '_blank')">Launch htop</button>
-        <a href="{{ url_for('monitoring.menu') }}"><button>Back to Menu</button></a>
+        <div class="metrics-container">
+            <div id="cpu" class="metric-bar-container">
+                <div class="metric-label">CPU Usage</div>
+                <div class="metric-value">0%</div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" style="width: 0;"></div>
+                </div>
+            </div>
+            
+            <div id="memory" class="metric-bar-container">
+                <div class="metric-label">Memory Usage</div>
+                <div class="metric-value">0%</div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" style="width: 0;"></div>
+                </div>
+            </div>
+            
+            <div id="disk" class="metric-bar-container">
+                <div class="metric-label">Disk Usage</div>
+                <div class="metric-value">0%</div>
+                <div class="metric-bar">
+                    <div class="metric-bar-fill" style="width: 0;"></div>
+                </div>
+            </div>
+        </div>
         
-        <div class="refresh-rate">Refreshing every 2 seconds</div>
+        <div class="container-actions">
+            <button onclick="window.open('/monitoring/machine/terminal', '_blank')">Launch htop</button>
+            <a href="{{ url_for('monitoring.menu') }}"><button>Back to Menu</button></a>
+        </div>
+        
+        <div class="refresh-rate">Refreshing every 5 seconds</div>
     </div>
 </body>
 </html>
